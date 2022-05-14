@@ -1,9 +1,10 @@
-// import 'dart:ffi';
-// import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:music/nowPlaying.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:just_audio/just_audio.dart';
+
+import 'dart:developer';
 
 void main() {
   runApp(MyApp());
@@ -18,6 +19,7 @@ class _songFile extends State<MyApp> {
   late Permission
       permission; //                                        //  request for permission
   PermissionStatus permissionStatus = PermissionStatus.denied;
+  int currentIndex = 0;
 
   void initState() {
     _listionfor();
@@ -41,7 +43,8 @@ class _songFile extends State<MyApp> {
 
     switch (status) {
       case PermissionStatus.denied:
-        _requestfor();
+        // _requestfor();
+        _request();
         break;
       case PermissionStatus.granted:
         break;
@@ -58,17 +61,45 @@ class _songFile extends State<MyApp> {
     }
   }
 
-  // void _request() {
-  //   Permission.storage.request();
-  // }
+  void _request() {
+    Permission.storage.request();
+  }
 
-  final audio = new OnAudioQuery();
+  void changeTrack(bool isNext) {
+    if (isNext) {
+      if (currentIndex != _audioPlayer.nextIndex) {
+        currentIndex++;
+      }
+    } else {
+      if (currentIndex != _audioPlayer.previousIndex) {
+        currentIndex--;
+      }
+    }
+    // key.currentState.playSong();
+  }
+
+// setCurrentIndex(int index) {
+//     var _currentSongIndex = index;
+//   }
+
+// SongModel get nextSong {
+//     if (_currentSongIndex <  length) {
+//       _currentSongIndex++;
+//     }
+//     if (_currentSongIndex >= length) return null;
+//     return _songs[_currentSongIndex];
+//   }
+
+  final OnAudioQuery audio = new OnAudioQuery();
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Music'),
+          title: const Text('Music'),
+          backgroundColor: Colors.black45,
         ),
         body: FutureBuilder<List<SongModel>>(
           future: audio.querySongs(
@@ -79,24 +110,38 @@ class _songFile extends State<MyApp> {
           ),
           builder: (context, item) {
             if (item.data == null) {
-              return Center(
-                child: CircularProgressIndicator(),
+              return const Center(
+                child: const CircularProgressIndicator(),
               );
-            }
-            if (item.data!.isEmpty) {
-              return Center(
-                  // child: Text('No song found'),
-                  // child: CircularProgressIndicator(),
-                  );
             }
 
             return ListView.builder(
               itemBuilder: (context, index) => ListTile(
-                leading: Icon(Icons.music_note_rounded),
-                title: Text(item.data![index].displayNameWOExt),
+                leading: const CircleAvatar(
+                    backgroundColor: Colors.black45,
+                    child: const Icon(
+                      Icons.music_note_rounded,
+                      size: 26,
+                      color: Colors.limeAccent,
+                    )),
+                title: Text(
+                  item.data![index].displayNameWOExt,
+                  maxLines: 1,
+                ),
                 subtitle: Text('${item.data![index].artist}'),
-                trailing: Icon(Icons.more_horiz),
-                onTap: () {},
+                trailing: const Icon(Icons.more_horiz),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NowPlaying(
+                              songModel: item.data![index],
+                              audioPlayer: _audioPlayer,
+
+                              // changeTrack: changeTrack,
+                            )),
+                  );
+                },
               ),
               itemCount: item.data!.length,
             );
