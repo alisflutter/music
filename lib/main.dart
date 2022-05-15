@@ -124,7 +124,7 @@ class _songFile extends State<MyApp> {
                   title: Text(
                     item.data![index].displayNameWOExt,
                     maxLines: 1,
-                    style: TextStyle(color: Color.fromARGB(255, 62, 50, 1)),
+                    style: TextStyle(color: Color.fromARGB(255, 78, 62, 1)),
                   ),
                   subtitle: Text('${item.data![index].artist}'),
                   trailing: const Icon(Icons.more_horiz),
