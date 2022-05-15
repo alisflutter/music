@@ -44,7 +44,9 @@ class _songFile extends State<MyApp> {
     switch (status) {
       case PermissionStatus.denied:
         // _requestfor();
+        Center(child: Text('Restart app and allow '));
         _request();
+        //  Center(child: Text('Restart app and allow '));
         break;
       case PermissionStatus.granted:
         break;
@@ -78,18 +80,6 @@ class _songFile extends State<MyApp> {
     // key.currentState.playSong();
   }
 
-// setCurrentIndex(int index) {
-//     var _currentSongIndex = index;
-//   }
-
-// SongModel get nextSong {
-//     if (_currentSongIndex <  length) {
-//       _currentSongIndex++;
-//     }
-//     if (_currentSongIndex >= length) return null;
-//     return _songs[_currentSongIndex];
-//   }
-
   final OnAudioQuery audio = new OnAudioQuery();
 
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -99,6 +89,7 @@ class _songFile extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Music'),
+          centerTitle: true,
           backgroundColor: Colors.black45,
         ),
         body: FutureBuilder<List<SongModel>>(
@@ -116,32 +107,40 @@ class _songFile extends State<MyApp> {
             }
 
             return ListView.builder(
-              itemBuilder: (context, index) => ListTile(
-                leading: const CircleAvatar(
-                    backgroundColor: Colors.black45,
-                    child: const Icon(
-                      Icons.music_note_rounded,
-                      size: 26,
-                      color: Colors.limeAccent,
-                    )),
-                title: Text(
-                  item.data![index].displayNameWOExt,
-                  maxLines: 1,
-                ),
-                subtitle: Text('${item.data![index].artist}'),
-                trailing: const Icon(Icons.more_horiz),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NowPlaying(
-                              songModel: item.data![index],
-                              audioPlayer: _audioPlayer,
+              itemBuilder: (context, index) => Card(
+                shadowColor: Colors.blueGrey,
+                elevation: 8,
+                color: Color.fromARGB(255, 177, 201, 201),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: ListTile(
+                  leading: const CircleAvatar(
+                      backgroundColor: Colors.black45,
+                      child: const Icon(
+                        Icons.music_note_rounded,
+                        size: 26,
+                        color: Colors.limeAccent,
+                      )),
+                  title: Text(
+                    item.data![index].displayNameWOExt,
+                    maxLines: 1,
+                    style: TextStyle(color: Color.fromARGB(255, 62, 50, 1)),
+                  ),
+                  subtitle: Text('${item.data![index].artist}'),
+                  trailing: const Icon(Icons.more_horiz),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NowPlaying(
+                                songModel: item.data![index],
+                                audioPlayer: _audioPlayer,
 
-                              // changeTrack: changeTrack,
-                            )),
-                  );
-                },
+                                // changeTrack: changeTrack,
+                              )),
+                    );
+                  },
+                ),
               ),
               itemCount: item.data!.length,
             );
